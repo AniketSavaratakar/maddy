@@ -134,7 +134,8 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     payload = {
         "model": AI_MODEL,
-        "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + history
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + history,
+        "stream": False
     }
 
     try:
