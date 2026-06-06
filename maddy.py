@@ -15,7 +15,7 @@ from telegram.ext import (
     filters,
 )
 
-from . import database
+import database
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -157,7 +157,9 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Something went wrong 😅")
 
 # ---------- Lifecycle ----------
-async def process_update(update_json: dict):
+def main():
+    database.initialize_db()
+
     app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
     # Register Commands
@@ -171,7 +173,21 @@ async def process_update(update_json: dict):
 
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat))
 
-    await app.initialize()
-    update = Update.de_json(update_json, app.bot)
-    await app.process_update(update)
-    await app.shutdown()
+    # Get port and webhook URL from env
+    port = int(os.environ.get("PORT", 10000))
+    webhook_url = os.environ.get("WEBHOOK_URL")  # e.g., https://your-bot.onrender.com/webhook
+
+    if webhook_url:
+        logger.info(f"Starting bot in WEBHOOK mode on port {port} pointing to {webhook_url}")
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=port,
+            url_path="webhook",
+            webhook_url=webhook_url
+        )
+    else:
+        logger.info("Starting bot in POLLING mode...")
+        app.run_polling()
+
+if __name__ == "__main__":
+    main()
