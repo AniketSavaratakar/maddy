@@ -144,6 +144,7 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 headers={"Authorization": f"Bearer {AI_API_KEY}"},
                 json=payload
             )
+            logger.info(f"Snofex Response: {r.status_code} - {r.text}")
             r.raise_for_status()
             resp = r.json()["choices"][0]["message"]["content"]
 
