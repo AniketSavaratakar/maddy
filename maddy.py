@@ -138,7 +138,7 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
 
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
             r = await client.post(
                 f"{AI_API_BASE}",
                 headers={"Authorization": f"Bearer {AI_API_KEY}"},
